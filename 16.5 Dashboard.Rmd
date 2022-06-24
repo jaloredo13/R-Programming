@@ -1,0 +1,88 @@
+---
+title: "Mi Primer Dashboard"
+author: "JL"
+date: "02/26/2021"
+output: 
+  flexdashboard::flex_dashboard:
+    social: menu
+    source_code: embed
+---
+
+# Ingresos y Años de Escolaridad
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(DT)
+```
+
+```{r}
+setwd("C:/Users/lorejos/Desktop/R/A2 Capacitación/R, Desde Cero hasta DataMaster/16 RMarkdown")
+enoe <- read_xlsx("mu_enoe.xlsx")
+```
+
+## Columna 1
+
+### Ingreso vs Año Escolaridad
+
+```{r}
+ggplot(data = enoe) +
+  geom_point(mapping = aes(x = anios_esc, y = ingreso_mensual))
+```
+
+### Diferencias en el salario promedio
+
+```{r}
+ggplot(data = enoe) +
+  geom_bar(mapping = aes(x = sex, fill = sex))
+```
+
+## Columna 2
+
+```{r}
+enoe %>% 
+  arrange(desc(ingreso_mensual)) %>%
+  head(500) %>%
+  select(estado, sex, edad, niv_edu, ingreso_mensual) %>%
+  DT::datatable()
+```
+
+# Nivel educativo
+
+## Columna 1
+
+### Información por sexo
+
+```{r}
+ggplot(data=enoe)+
+geom_bar(mapping = aes(x=sex, fill=niv_edu))
+```
+
+### Ubicación
+
+```{r}
+library(leaflet)
+leaflet() %>%
+setView(-103.38742861607173, 20.67460296566588, zoom = 16) %>%
+addTiles() %>%
+addMarkers(-103.38742861607173, 20.67460296566588, popup = "Minerva")
+```
+
+## Columna 2
+
+### Observaciones
+
+```{r}
+ggplot(data=enoe, mapping = aes(x=sex, fill=niv_edu))+
+geom_bar( position = "dodge")+
+labs(title="Observaciones por sexo y nivel educativo", x="Sexo", y="Observaciones")
+```
+
+### Diagrama caja
+
+```{r}
+ggplot(data=enoe, mapping = aes(x=niv_edu, y=ingreso_mensual))+
+geom_boxplot()+
+coord_flip()
+```
+
